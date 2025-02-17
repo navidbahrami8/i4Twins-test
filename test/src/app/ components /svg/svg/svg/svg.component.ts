@@ -17,6 +17,7 @@ import { BrowserModule } from '@angular/platform-browser';
   styleUrl: './svg.component.css',
 })
 export class SvgComponent implements AfterViewInit {
+  colors:string[]=['blue','green', 'black']
   svg:any;
   isInput:boolean=false
  _data!:ISvg;
@@ -25,7 +26,8 @@ get data(): ISvg {
 }
 @Input() set data(value: ISvg) {
     this._data = value;
-    this.createChart()
+    this.cdf.detectChanges();
+    this.createChart();
 }
 @Input() title!:string
   constructor(private el: ElementRef,private cdf:ChangeDetectorRef
@@ -33,7 +35,7 @@ get data(): ISvg {
   ngAfterViewInit(): void {
     
   }
-  private createChart(): void {
+   createChart(): void {
     this.svg = d3
       .select(this.el.nativeElement)
       .select(this._data.tag)
@@ -49,13 +51,25 @@ get data(): ISvg {
 
       this.svg.select(this._data.status)
       .on('click', (event:any) => {
-        console.log('کلیک چپ شد!', event);
+        this.changeColor()
+        //وقتی چپ کلیک را میزنیم
       })
       .on('contextmenu', (event:any) => {
         event.preventDefault();
-        console.log('راست‌کلیک شد!', event);
-        this.isInput =true
+        this.isInput =true;
+        this.cdf.markForCheck();
+        //وقتی راست کلیک را میزنیم
       });
       this.cdf.detectChanges();
+  }
+
+  changeColor(){
+    for (let index = 1; index < this.colors.length; index++) {
+      const element = this.colors[index];
+      setTimeout(() => {
+      this.svg.append(this._data.status).attr('fill',element)
+      this.cdf.markForCheck();
+      },5000)
+    }
   }
 }
