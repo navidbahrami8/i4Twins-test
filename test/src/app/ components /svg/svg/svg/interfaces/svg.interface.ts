@@ -4,4 +4,5 @@ export interface ISvg{
     fill:string
     width: number
     height :number
+    data?:any
 }

@@ -1,3 +1,6 @@
-
-<app-svg [data]="data">
+<div>
+    <input type="file" (change)="onFileSelected($event)" accept=".svg" />
+    
+  </div>
+<app-svg *ngIf="svgData" [data]="data">
 </app-svg>

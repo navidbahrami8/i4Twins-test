@@ -26,7 +26,6 @@ get data(): ISvg {
 }
 @Input() set data(value: ISvg) {
     this._data = value;
-    this.cdf.detectChanges();
     this.createChart();
 }
 @Input() title!:string
@@ -36,20 +35,27 @@ get data(): ISvg {
     
   }
    createChart(): void {
-    this.svg = d3
-      .select(this.el.nativeElement)
-      .select(this._data.tag)
-      .attr('width', this._data.width)
-      .attr('height', this._data.height);
 
-    this.svg
-      .append(this._data.status)
-      .attr('cx', 100)
-      .attr('cy', 100)
-      .attr('r', 50)
-      .attr('fill', this._data.fill);
+    const container = this.el.nativeElement.querySelector('#canvas');
+    container.innerHTML = '';  // پاک کردن محتویات قبلی
 
-      this.svg.select(this._data.status)
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(this._data.data, "image/svg+xml");
+    const svgElement = svgDoc.documentElement;
+
+    container.appendChild(svgElement); // اضافه کردن SVG به container
+
+    //this.svg = d3
+    //  .select(this.el.nativeElement)
+     // .select(this._data?.tag)
+     // .attr('width', this._data?.width)
+     // .attr('height', this._data?.height);
+
+   this.svg
+    .append(svgElement)
+    .attr('fill', this._data?.fill);
+
+      this.svg.select(svgElement)
       .on('click', (event:any) => {
         this.changeColor()
         //وقتی چپ کلیک را میزنیم
@@ -67,7 +73,7 @@ get data(): ISvg {
     for (let index = 1; index < this.colors.length; index++) {
       const element = this.colors[index];
       setTimeout(() => {
-      this.svg.append(this._data.status).attr('fill',element)
+      this.svg.append(this._data?.status).attr('fill',element)
       this.cdf.markForCheck();
       },5000)
     }
